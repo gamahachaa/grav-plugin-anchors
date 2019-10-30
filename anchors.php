@@ -10,6 +10,7 @@ class AnchorsPlugin extends Plugin
     /**
      * @return array
      */
+    protected $isDoc;
     public static function getSubscribedEvents()
     {
         return [
@@ -49,9 +50,15 @@ class AnchorsPlugin extends Plugin
 
         /** @var Page $page */
         $page = $this->grav['page'];
-        if (isset($page->header()->anchors)) {
+        $this->isDoc = $this->filterByTemplate($page);
+        if (isset($page->header()->anchors) ) {
             $this->config->set('plugins.anchors', array_merge($defaults, $page->header()->anchors));
         }
+    }
+    function filterByTemplate($page)
+    {
+//        var_dump($this->config->get('plugins.anchors'));
+        return in_array($page->template(), $this->config->get('plugins.anchors.templates'));
     }
 
     /**
@@ -59,7 +66,7 @@ class AnchorsPlugin extends Plugin
      */
     public function onTwigSiteVariables()
     {
-        if ($this->config->get('plugins.anchors.active')) {
+        if ($this->config->get('plugins.anchors.active') && $this->isDoc) {
            
             $selectors = explode(',', $this->config->get('plugins.anchors.selectors', 'h1,h2,h3,h4'));
             $container = $this->config->get('plugins.anchors.container', 'body').' ';
