@@ -60,16 +60,21 @@ class AnchorsPlugin extends Plugin
     public function onTwigSiteVariables()
     {
         if ($this->config->get('plugins.anchors.active')) {
-            $selectors = $this->config->get('plugins.anchors.selectors', 'h1,h2,h3,h4');
-
+           
+            $selectors = explode(',', $this->config->get('plugins.anchors.selectors', 'h1,h2,h3,h4'));
+            $container = $this->config->get('plugins.anchors.container', 'body').' ';
+//            $fun = function($val, $s){return "$s $val";};
+            $prefixed_array = preg_filter('/^/', $container, $selectors);
+            $containedSelectors = implode(',', $prefixed_array);
             $visible = "visible: '{$this->config->get('plugins.anchors.visible', 'hover')}',";
             $placement = "placement: '{$this->config->get('plugins.anchors.placement', 'right')}',";
             $icon = $this->config->get('plugins.anchors.icon') ? "icon: '{$this->config->get('plugins.anchors.icon')}'," : '';
             $class = $this->config->get('plugins.anchors.class') ? "class: '{$this->config->get('plugins.anchors.class')}'," : '';
             $truncate = "truncate: {$this->config->get('plugins.anchors.truncate', 64)}";
-
+            $this->grav['assets']->addJs('plugin://anchors/js/jquery-scrolltofixed-min.js');
+            $this->grav['assets']->addJs('plugin://anchors/js/anchors_grav.js');
             $this->grav['assets']->addJs('plugin://anchors/js/anchor.min.js');
-
+            
             $anchors_init = "$(document).ready(function() {
                                 anchors.options = {
                                     $visible
@@ -78,9 +83,12 @@ class AnchorsPlugin extends Plugin
                                     $class
                                     $truncate
                                 };
-                                anchors.add('$selectors');
-                             });";
-
+                                anchors.add('$containedSelectors');
+//                                $('#sidebar').scrollToFixed({zIndex: 1000});
+                                $('#page-toc').scrollToFixed({zIndex: 500});
+                                document.getElementById('toc').appendChild(generateTableOfContents(anchors.elements));
+                           });";
+                             
 
             $this->grav['assets']->addInlineJs($anchors_init);
         }

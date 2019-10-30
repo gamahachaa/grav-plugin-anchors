@@ -31,17 +31,23 @@ class AnchorsTwigExtension extends \Twig_Extension
      * @param $tag
      * @return string
      */
-    public function anchorsFunction($content, $tag = 'h2', $terms)
+    public function anchorsFunction($content, $tag = 'h2', $terms='')
     {
-
+       
         $configTags = array_map('trim', explode(',',$this->config));
-
+        echo '<pre>';
+        
+//        var_dump( $this->config );
+//        var_dump($configTags );
+//        var_dump( $tag );
+//        var_dump(in_array($tag, $configTags));
         if (in_array($tag, $configTags)){
             $textMenu = [];
             $rx = '/<'.$tag.'>(.*)<\/'.$tag.'>/';
 
             preg_match_all($rx, $content, $group);
-
+//            var_dump( $content );
+            //var_dump( $group[2] );
             if (!empty($group[1])){
 
                 if (!empty($terms)){
@@ -60,9 +66,10 @@ class AnchorsTwigExtension extends \Twig_Extension
             }
         }else{
             $tag = current($configTags);
+//            var_dump( $tag );
             $html = $this->anchorsFunction($tag, $content);
         }
-
+        echo '</pre>';
         return $html;
 
     }
