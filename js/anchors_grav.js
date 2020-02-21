@@ -7,9 +7,8 @@
 
 function generateTableOfContents(els)
 {
-//    console.log("generating");
+
     var anchoredElText, anchoredElHref, ul = document.createElement('UL');
-//    document.getElementById('toc').appendChild(ul);
     for (var i = 0; i < els.length; i++) {
         anchoredElText = els[i].textContent;
         anchoredElHref = els[i].querySelector('.anchorjs-link').getAttribute('href');
